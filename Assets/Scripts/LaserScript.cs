@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class LaserScript : MonoBehaviour
 {
     public GameObject explosionPrefab;
+	public AudioClip shootSound;
+    public AudioClip laserSound;
+    public Text scoreText;
+    private int scoreCount = 0;
+	private AudioSource source;
 
     public float mFireRate = .5f;
     public float mFireRange = 50f;
@@ -66,6 +72,8 @@ private IEnumerator LaserFx(){
         // Checks if the RayCast hit something
         if (Physics.Raycast(rayOrigin, cam.forward, out hit, mFireRange))
         {
+            scoreCount++;
+            scoreText.text = "SCORE: " + scoreCount;
 
             // Set the end of the Laser Line to the object hit
             mLaserLine.SetPosition(1, hit.point);
@@ -77,6 +85,8 @@ private IEnumerator LaserFx(){
                     hit.rigidbody.AddForce(-hit.normal*mHitForce);
                     // apply damage the target
                     cubeCtr.Hit( mLaserDamage );
+                    source = GetComponent<AudioSource>();
+                    source.PlayOneShot(shootSound, 1F);
                     Instantiate(explosionPrefab, hit.point, Quaternion.identity);
                 }
             }
@@ -88,6 +98,9 @@ private IEnumerator LaserFx(){
             // using the Laser range
             mLaserLine.SetPosition(1, cam.forward * mFireRange);
         }
+
+           source = GetComponent<AudioSource>();
+           source.PlayOneShot(laserSound, 1F);
 // Show the Laser using a Coroutine
     StartCoroutine(LaserFx());
 		
